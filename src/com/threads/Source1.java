@@ -1,41 +1,150 @@
 package com.threads;
 
-/**
- * Created by alexandr on 19.05.15.
- * {@link http://habrahabr.ru/company/luxoft/blog/157273/}
- * {@link http://habrahabr.ru/post/164487/}
- * {@link http://www.helloworld.ru/texts/comp/lang/java/java5/vol10/ch5.html}
- * ***************************************************************************************************
- * Обзор java.util.concurrent.*
- * Многопоточность в Java
- * {@link http://info.javarush.ru/translation/2014/10/27/Синхронизация-потоков-блокировка-объекта-и-блокировка-класса.html}
- ** (Java / Приемы синхронизации в java) http://www.quizful.net/interview/java/synchronization-techniques
- *
-     1. Системная синхронизация с использованием wait/notify.
-     Поток, который ждет выполнения каких-либо условий, вызывает у этого объекта метод wait, предварительно захватив его монитор. На этом его работа приостанавливается. Другой поток может вызвать на этом же самом объекте метод notify (опять же, предварительно захватив монитор объекта), в результате чего, ждущий на объекте поток "просыпается" и продолжает свое выполнение.
-     2. Системная синхронизация с использованием join
-     Метод join, вызванный у экземпляра класса Thread, позволяет текущему потоку остановиться до того момента, как поток, связаный с этим экземпляром, закончит работу.
-     3. Использование классов из пакета java.util.concurrent,
-     который предоставляет набор классов для организации межпоточного взаимодействия. Примеры таких классов - Lock, семафор (Semaphore), etc. Концепция данного подхода заключается в использовании атомарных операций и переменных.
- */
+import com.sun.org.apache.xalan.internal.lib.ExsltBase;
 
+/**
+ * Created by alexandr on 20.05.15.
+ * {@link http://javaigrun.ru/2010/04/09/potoki-v-java/}
+ * {@link http://www.darkraha.com/rus/java/api/jcls04.php}
+ * {@link http://initialize.ru/vzaimodeistvie-mejdu-potikami-java}
+ * ***************************************************************************************************
+ * Определение потока в Java
+ */
 public class Source1 {
 
-    static SomeThing mThing;
-
     public static void main(String[] args) {
-        mThing = new SomeThing();
+        MyThread myThread = new MyThread();
+//        myThread.run(); // Так можно (Метод просто выполнится), но новый поток не создастся.
+        myThread.start();
 
-        Thread myThready = new Thread(mThing);	// Создание потока "myThready"
-        myThready.start();				        // Запуск потока
+        MyRunnable myRunnable1 = new MyRunnable("MyRunnable");
+        Thread thread1 = new Thread(myRunnable1);
+        thread1.start();
 
-        System.out.println("Главный поток завершён...");
+
+        NameRunnable nameRunnable = new NameRunnable();
+        Thread one = new Thread(nameRunnable);
+        Thread two = new Thread(nameRunnable);
+        Thread three = new Thread(nameRunnable);
+        one.setName("NameRunnable-1");
+        two.setName("NameRunnable-2");
+        three.setName("NameRunnable-3");
+        one.start();
+        two.start();
+        three.start();
+
+        NameRunnable2 nameRunnable2 = new NameRunnable2();
+        Thread one2 = new Thread(nameRunnable2);
+        Thread two2 = new Thread(nameRunnable2);
+        Thread three2 = new Thread(nameRunnable2);
+        one2.setName("NameRunnable-1.2");
+        two2.setName("NameRunnable-2.2");
+        three2.setName("NameRunnable-3.2");
+        one2.start();
+        two2.start();
+        three2.start();
+
+
+        MyThread2 myThread2 = new MyThread2();
+        myThread2.start();
+
+//        myThread2.fWait = true; // возобновляем выполнение
+//        try {
+//            myThread2.sleep(1);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        myThread2.fWait = false; // приостанавливаем
+//        System.out.println("(MyThread2) Стоп");
+
+        while (true) {
+            synchronized (myThread2) { // приостанавливаем
+                System.out.println("приостанавливаем");
+                myThread2.fWait = false;
+            }
+            try {
+                myThread2.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            synchronized (myThread2) { // возобновляем выполнение
+                System.out.println("возобновляем выполнение");
+                myThread2.fWait = true;
+                myThread2.notify();
+            }
+        }
+
+
     }
 
+}
 
-    static class SomeThing implements Runnable {
-        public void run() { //Этот метод будет выполняться в побочном потоке
-            System.out.println("Привет из побочного потока!");
+
+class MyThread extends Thread {
+    // переопределение метода "run" - разрешается!
+    @Override
+    public void run(){
+        System.out.println("Очень важная работа выполняется в MyThread");
+    }
+
+    // перегрузка метода "run" - запрещается...
+    public void run(String s) {
+        System.out.println("Строка из метода run: " + s);
+    }
+}
+
+class MyRunnable implements Runnable {
+    private String name = null;
+
+    public MyRunnable(String name){
+        this.name = name;
+    }
+
+    @Override
+    public void run(){
+        System.out.println("Очень важная работа выполняется в " + name);
+    }
+}
+
+class NameRunnable implements Runnable {
+    @Override
+    public void run(){
+        for(int i =1; i <= 3; i++)
+            System.out.println("NameRunnable запущен >> Выполняется '" + Thread.currentThread().getName() + "' >> (" + i + ")");
+    }
+}
+
+class NameRunnable2 implements Runnable {
+    @Override
+    public void run(){
+        synchronized(this) { // синхронизируемся на себе
+            for (int i = 1; i <= 3; i++)
+                System.out.println("NameRunnable2 запущен >> Выполняется-синхронизируемся '" + Thread.currentThread().getName() + "' >> (" + i + ")");
+        }
+    }
+}
+
+class MyThread2 extends Thread {
+    public boolean fWait = true;
+
+    @Override
+    public void run(){
+        int i = 0;
+        System.out.println("(MyThread2) Запуск");
+
+//        while (fWait) {
+//            System.out.println("(MyThread2) Цыкл [" + i + "]");
+//            i++;
+//        }
+
+        while (fWait) {
+            System.out.println(">>> MyThread2 [" + i + "]");
+            synchronized (this) { // синхронизируемся на себе
+                try {
+                    wait();
+                } catch (Exception e) {}
+            }
+            i++;
         }
     }
 }

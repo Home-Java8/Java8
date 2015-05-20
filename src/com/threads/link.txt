@@ -1,0 +1,53 @@
+ПРОЦЕСС(Ы) - это выделеная область в оперативной памяти где выполняется программа...
+ПОТОК(и) - это процессорное время...
+РЕСУРС(Ы) - это может быть какие-то данные или блок кода, к которому ограничивается доступ только для одного потока.
+
+Ресурсы они являются всегда доступными и никогда немогут блокироваться...
+Блокироваться могут только потоки...
+
+Поэтому всегда для синхронизации потоков указывается ресурс, который нужно синхронизировать (относительно этих потоков).
+
+'SYNCHRONIZED' - может синхронизировать и данные, и блоки между потоками...
+Поэтому можно передавать либо переменную, в качестве параметров, либо применять к функции (тело блока которого нужно синхронизировать).
+То есть, потоки сами себя блокировать НЕмогут, для этого нужен какой-нибудь ресурс который (относительно которого) будет блокировать другие потоки...
+
+'WAIT', 'NOTIFY' - они используются тоже для (синхронизации) блокировки потоков. Но эти методы могут быть вызваны только с помощью объекта (типа данных, относительно которого выполняется синхронизация) и только внутри блока 'SYNCHRONIZED' (внутри которого выполняется синхронизация)...
+
+Поэтому существует такое понятие как - поток захватил ресурс = захватить МОНИТОР.
+Как только поток начал работать с эти ресурсом, именно этот ресурс может заблокировать этот поток и освободить монитор для других потоков (поток вызывает у объекта метод 'wait').
+
+'VOLATILE' - он тоже используется для синхронизации но только уже данных (для полей, НЕ для блоков и методов).
+'volatile' отличается от 'synchronized' тем что не имеет кеша и поэтому работает быстрее. (а 'synchronized' работает с данными используя кеш для хранения временных-промежуточных данных)
+
+
+Java не умеет работать с потоками. Работа с потоками реализована на уровне самой Операционной Системы (и на разных Операционных Системах по разному).
+Поэтому в Java можно создать специальный объект ('Thread', 'Runnable'), и с помощю метода 'start()' передать программу Операционной Системе, чтобы та в свою очередь запустила поток...
+
+
+Cемафоры чаще всего используются для ограничения количества потоков при работе с аппаратными ресурсами или файловой системой. Доступ к общему ресурсу управляется с помощью счетчика.
+Синхронизация потоков, блокировка объекта и блокировка класса
+
+
+
+http://developer.alexanderklimov.ru/android/java/thread.php
+http://habrahabr.ru/company/luxoft/blog/157273/
+http://javaigrun.ru/2010/04/09/potoki-v-java/
+http://www.darkraha.com/rus/java/api/jcls04.php
+http://www.javaportal.ru/java/class/Thread.html
+http://www.skipy.ru/technics/synchronization.html
+http://info.javarush.ru/translation/2014/10/27/Синхронизация-потоков-блокировка-объекта-и-блокировка-класса.html
+http://www.helloworld.ru/texts/comp/lang/java/java5/vol10/ch5.html
+http://www.skipy.ru/technics/synchronization.html
+( http://habrahabr.ru/post/143237/ )
+http://www.quizful.net/interview/java/synchronization-techniques
+( https://mail.yandex.ua/neo2/?uid=40270829&login=sashakmets#message/2370000006254851696 )
+https://mail.yandex.ua/neo2/?uid=40270829&login=sashakmets#message/2370000006240542699
+https://docviewer.yandex.ru/?url=ya-mail%3A%2F%2F2370000006240542699%2F1.2&uid=40270829&name=%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8-2.txt&c=555c2c0e450a&page=5
+https://docviewer.yandex.ru/?url=ya-mail%3A%2F%2F2370000006240542699%2F1.2&uid=40270829&name=%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8-2.txt&c=555c2c0e450a&page=6
+https://docviewer.yandex.ru/?url=ya-mail%3A%2F%2F2370000006240542699%2F1.2&uid=40270829&name=%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8-2.txt&c=555c31de58cc&page=7
+https://github.com/Home-SignUp/Jenkins-SignUp/blob/hotfix-3.1.1.3/backend/src/main/java/com/addrbook/backend/exception/PersonNotFoundException.java
+( https://github.com/Home-SignUp/Jenkins-SignUp/blob/hotfix-3.1.1.3/frontend/src/main/java/com/addrbook/frontend/controller/UserController.java )
+https://mail.yandex.ua/neo2/?uid=40270829&login=sashakmets#message/2560000000563161839
+
+http://movejava.blogspot.com/2013/06/javautilconcurrentsemaphore.html
+http://movejava.blogspot.com/2013/06/javautilconcurrentcountdownlatch.html
