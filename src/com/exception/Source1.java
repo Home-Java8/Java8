@@ -9,6 +9,10 @@ package com.exception;
  * {@link https://docviewer.yandex.ru/?uid=40270829&url=ya-mail%3A%2F%2F2370000006240542699%2F1.2&name=%D1%81%D1%81%D1%8B%D0%BB%D0%BA%D0%B8-2.txt&page=7&c=555d51f88b85}
  ******************************************************
  * Обработка исключений
+ * Только подклассы класса Throwable могут быть возбуждены или пере­хвачены. Простые типы — int, char и т.п., а также классы, не являю­щиеся подклассами Throwable, например, String и Object, использоваться в качестве исключений не могут.
+ *
+ * http://www.quizful.net/interview/java/exception-types
+ * http://aectann.wikidot.com/java-exceptions-handling
  *
 В Java исключения "Exception/RuntimeException" и ошибки "Errors" являются объектами.
 Когда метод вызывает исключительную ситуацию (бросает - "throws") он работает только с теми объектами, которые наследуются от "Throwable".
@@ -90,17 +94,31 @@ public class Source1 {
         try {
             demoproc();
         } catch(NullPointerException npe) {
-            System.out.println("[#2] recaught: " + npe);
+            System.out.println("[#1.2] recaught: " + npe);
         }
 
+        System.out.println();
 
         // Если метод способен возбуждать исключения, которые он сам не об­рабатывает, он должен объявить о таком поведении, чтобы вызывающие методы могли защитить себя от этих исключений.
         // Для задания списка исключений, которые могут возбуждаться методом, используется ключе­вое слово throws.
         try {
             procedure2();
-        } catch (IllegalAccessException e) {
-                System.out.println("[#4] caught " + e);
+        } catch (IllegalAccessException iae) {
+                System.out.println("[#2.2] caught " + iae);
         }
+
+        System.out.println();
+
+
+        // finally (здесь я перехватываю исключения)
+        try {
+            procA();
+        } catch (RuntimeException re) {}
+        procB();
+
+
+//        throw new Error();
+        f(new NullPointerException()); //f(null);
     }
 
     static void procedure() {
@@ -112,19 +130,48 @@ public class Source1 {
         }
     }
 
+    // ( Это пример того как я использую вложенные исключения... они будут обработаны согласно порядку вложенности... вверх по иерархии )
+    // здесь метод имеет собственный блок "try/catch" внутри которого возбуждается исключение, который сперва перехватывает исключение а потом
     static void demoproc() {
         try {
-            throw new NullPointerException("demo [#1]");
-        } catch (NullPointerException e) {
-            System.out.println("[#1] caught inside demoproc");
-            throw e;
+            throw new NullPointerException("demo [#1.1]");
+        } catch (NullPointerException npe) {
+            System.out.println("[#1.1] caught inside demoproc");
+            throw npe;
         }
     }
 
     // Для того, чтобы мы смогли оттранслировать этот пример, нам при­дется сообщить транслятору, что procedure может возбуждать исключе­ния типа IllegalAccessException и в методе main
+    //
     static void procedure2() throws IllegalAccessException {
-        System.out.println("[#3] inside procedure");
-        throw new IllegalAccessException("demo [#2]");
+        System.out.println("[#2.1] inside procedure");
+        throw new IllegalAccessException("demo [#2.1]");
     }
 
+
+    static void procA() { // finally (здесь я бросаю исключения)
+        try {
+            System.out.println("inside procA");
+            throw new RuntimeException("demo");
+        } finally {
+            System.out.println("procA's finally");
+        }
+    }
+    static void procB() { // finally (здесь просто перехватываю исключения)
+        try {
+            System.out.println("inside procB");
+            return;
+        } finally {
+            System.out.println("procB's finally");
+        }
+    }
+
+    // эта функция в любом случае будет бросать исключение NullPointerException и его-эе потом ловить - то есть, это зацыклит программу (и вызовет переполнение стека...)
+    public static void f(NullPointerException e) {
+        try {
+            throw e;
+        } catch (NullPointerException npe) {
+            f(npe);
+        }
+    }
 }
