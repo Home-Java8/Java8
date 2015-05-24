@@ -8,6 +8,7 @@ public class My1 {
     public static void main(String[] args) {
         System.out.println(Shape.str1);
 //        System.out.println(Shape.str2);
+        System.out.println(Drawer.b); // System.out.println(Shape.a); // (так нельзя)
     }
 }
 
@@ -27,5 +28,7 @@ abstract class Shape {
 }
 
 interface Drawer {
+    public int a = 100;
+    public static int b = 200;
     public void drawCircle(int x, int y, int radius);
 }
