@@ -1,0 +1,5 @@
+package com.patterns2.facade;
+
+class Memory {
+    public void load(long position, byte[] data) { /* ... */ }
+}
