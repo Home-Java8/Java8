@@ -70,3 +70,41 @@
 К `RuntimeException` (UNCHECKED) можно отнести: NullPointetrException, IndexOutOfBoundsException, ArrayIndexOutOfBoundsException, ArichmeticException, IllegalArgumentException
 
 К `Exception` (CHECKED) можно отнести: IOException, EOFException, ObjectStreamException, InterrupteException
+
+
+###Ссылки
+
+* [Создание собственного исключения/Exception](https://code.google.com/p/nc-training-5/wiki/TryCatchException)
+* [пример, как правильно работать с RuntimeException](http://habrahabr.ru/post/183322/)
+* [Почему используем System.err, а не System.out](http://habrahabr.ru/company/golovachcourses/blog/223821/)
+* `проверка на cheched исключения происходит в момент компиляции, а перехват исключений (catch) происходит в момент выполнения` [Поведение компилятора/JVM](http://habrahabr.ru/company/golovachcourses/blog/225585/)
+* [Классификация исключений](http://neerc.ifmo.ru/wiki/index.php?title=Обработка_ошибок_и_исключения)
+* [Встроенные исключения Java](http://developer.alexanderklimov.ru/android/java/exception.php)
+* `Наличие\обработка Checked исключения проверяются на этапе компиляции, Наличие\обработка Unchecked исключения происходит на этапе выполнения` [Checked исключения отличаются от Unchecked исключения в Java, тем что](http://www.quizful.net/post/java-exceptions)
+
+> Создание собственного исключения/Exception
+>> Делится на создание собственного класса исключений, вызов его из необходимого участка функции/процедуры и указание спецификации данного исключения в заглавии функции/процедуры (если исключение контролируемое).
+
+
+> Проверяемые исключения (Все исключения, кроме "Error" и "RuntimeException" являются проверяемыми)
+>> Наследники класса Exception являются проверяемыми исключениями (checked exception). Как правило это ошибки возникшие по вине внешних обстоятельств или пользователя приложения (неправильно указали имя файла). Эти исключения должны обрабатываться в ходе работы программы, поэтому компилятор проверяет наличие обработчика или явного описания тех типов исключений, которые могут быть сгенерированы некоторым методом.
+
+
+>  Error
+>> Класс Error и его подклассы предназначены для системных ошибок. Свои собственные классы-наследники для Error писать не нужно. Как правило, это действительно фатальные ошибки, пытаться обработать которые довольно бессмысленно (например OutOfMemoryError).
+
+
+>  RuntimeException
+>> Эти исключения обычно возникают в результате ошибок программирования, такие как ошибки разработчика или неверное использование интерфейса приложения. Например, в случае выхода за границы массива метод бросит OutOfBoundsException. Такие ошибки могут быть в любом месте программы, поэтому компилятор не требует указывать runtime исключения в объявлении метода. Теоретически приложение может поймать это исключение, но разумнее исправить ошибку.
+
+
+> Список проверяемых системных исключений, которые можно включать в список throws
+>> ArithmeticException, ArrayIndexOutOfBoundsException, ArrayStoreException, ClassCastException, EnumConstantNotPresentException, IllegalArgumentException, IllegalMonitorStateException, IllegalStateException, IllegalThreadStateException, IndexOutofBoundsException, NegativeArraySizeException, NullPointerException, NumberFormatException, SecurityException, StringIndexOutOfBounds, TypeNotPresentException, UnsupportedOperationException
+
+
+> список непроверяемых исключений
+>> ClassNotFoundException, CloneNotSupportedException, IllegalAccessException, InstantiationException, InterruptedException, NoSuchFieldException, NoSuchMethodException, ReflectiveOperationException
+
+
+> Checked исключения (Exception) - это те которые должны обрабатываться блоком catch или описываться в сигнатуре метода. Unchecked (RuntimeException) могут не обрабатываться и не быть описанными
+>> Checked исключения должны описываться в сигнатуре метода через throws или обрабатываться блоком try/catch/finally.
